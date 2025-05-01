@@ -1,8 +1,8 @@
 [build]
 publish = "public"
-command = "yarn project-setup && yarn build"
+command = "npm run project-setup && npm build"
 
 [build.environment]
-HUGO_VERSION = "0.115.1"
-GO_VERSION = "1.20.5"
+HUGO_VERSION = "0.146.7"
+GO_VERSION = "1.23.4"
 HUGO_BASEURL = "/"
