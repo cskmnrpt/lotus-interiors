@@ -12,5 +12,12 @@
     "preview:example": "cd exampleSite; hugo server --themesDir ../.. --disableFastRender --navigateToChanged --templateMetrics --templateMetricsHints --watch --forceSyncStatic -e production --minify",
     "project-setup": "node ./scripts/projectSetup.js",
     "theme-setup": "node ./scripts/themeSetup.js"
+  },
+  "dependencies": {
+    "tinacms": "^2.7.5"
+  },
+  "devDependencies": {
+    "@tinacms/cli": "^1.9.5",
+    "@types/node": "^22.15.3"
   }
 }
