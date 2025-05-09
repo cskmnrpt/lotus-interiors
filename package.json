@@ -1,7 +1,6 @@
 {
-  "name": "airspace-hugo",
-  "version": "1.2.3",
-  "license": "MIT",
+  "name": "lotus-interiors",
+  "version": "1.0",
   "author": "gethugothemes",
   "scripts": {
     "dev": "hugo server",
