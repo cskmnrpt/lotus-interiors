@@ -1,10 +1,10 @@
-# Sample workflow for building and deploying a Hugo site to GitHub Pages
+---
 name: Deploy Hugo site to Pages
 
 on:
-  # Runs on pushes targeting the default branch
   push:
     branches: ["main"]
+  workflow_dispatch: # Allows manual triggering of the workflow
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -15,54 +15,51 @@ permissions:
 # Environment variables available to all jobs and steps in this workflow
 env:
   HUGO_ENV: production
-  HUGO_VERSION: "0.115.1"
-  GO_VERSION: "1.20.5"
-  NODE_VERSION: "18.15.0"
-  TINA_CLIENT_ID: ${{ vars.TINA_CLIENT_ID }}
-  TINA_TOKEN: ${{ vars.TINA_TOKEN }}
+  HUGO_VERSION: "0.135.0" # Latest Hugo extended version as of Oct 2024
+  GO_VERSION: "1.23.2" # Latest stable Go version
+  NODE_VERSION: "20.18.0" # Latest LTS Node.js version
 
 jobs:
-  # Build job
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive # Ensure submodules (e.g., themes) are checked out
+
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm' # Cache npm dependencies for faster builds
 
-      - name: Install Hugo
-        run: |
-          curl -LO "https://github.com/gohugoio/hugo/releases/download/v${{ env.HUGO_VERSION }}/hugo_extended_${{ env.HUGO_VERSION }}_Linux-64bit.tar.gz"
-          tar -xvf hugo_extended_${{ env.HUGO_VERSION }}_Linux-64bit.tar.gz
-          sudo mv hugo /usr/local/bin/
-          rm hugo_extended_${{ env.HUGO_VERSION }}_Linux-64bit.tar.gz
-          hugo version
+      - name: Set up Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: ${{ env.HUGO_VERSION }}
+          extended: true # Use Hugo extended for SCSS/Sass support
 
-      - name: Install Go
-        run: |
-          curl -LO "https://dl.google.com/go/go${{ env.GO_VERSION }}.linux-amd64.tar.gz"
-          sudo tar -C /usr/local -xzf go${{ env.GO_VERSION }}.linux-amd64.tar.gz
-          echo "export PATH=$PATH:/usr/local/go/bin" >> $GITHUB_ENV
-          rm go${{ env.GO_VERSION }}.linux-amd64.tar.gz
-          go version
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true # Cache Go modules
+
+      - name: Install npm dependencies
+        run: npm ci # Use npm ci for cleaner, reproducible builds
 
       - name: Setup Project
         run: npm run project-setup
 
-      - name: Install npm dependencies
-        run: npm install
-
-      - name: Publish to GitHub Pages
-        run: npm run build
+      - name: Build Hugo site
+        run: hugo --minify --environment ${{ env.HUGO_ENV }}
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ./public
 
-  # Deployment job
   deploy:
     environment:
       name: github-pages
@@ -72,4 +69,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4
