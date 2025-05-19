@@ -25,9 +25,11 @@ jobs:
         run: npm install
 
       - name: Run Project Setup (if needed)
-        if: github.event_name == 'push' # Only run on push events
+        if: github.event_name == 'push' && env.GITHUB_REF != 'refs/heads/gh-pages' # Only run on push events and not gh-pages branch
         run: |
           if [ -f scripts/projectSetup.js ]; then
+            # Adjust the path to hugo.toml if necessary for the script
+            sed -i 's/\/exampleSite\/config\/_default\/hugo.toml/\/config\/_default\/hugo.toml/g' scripts/projectSetup.js
             npm run project-setup
           fi
 
