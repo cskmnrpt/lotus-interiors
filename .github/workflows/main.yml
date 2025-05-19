@@ -19,9 +19,13 @@ jobs:
         uses: peaceiris/actions-hugo@v2
         with:
           hugo-version: 'latest'  # or specify a version
+          config-path: config # Specify the directory containing hugo.toml
 
       - name: Build site
-        run: hugo
+        run: |
+          npm ci
+          npm run project-setup
+          hugo
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
