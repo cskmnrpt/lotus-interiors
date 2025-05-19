@@ -21,11 +21,18 @@ jobs:
           hugo-version: 'latest'  # or specify a version
           config-path: config # Specify the directory containing hugo.toml
 
-      - name: Build site
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Project Setup (if needed)
+        if: github.event_name == 'push' # Only run on push events
         run: |
-          npm ci
-          npm run project-setup
-          hugo
+          if [ -f scripts/projectSetup.js ]; then
+            npm run project-setup
+          fi
+
+      - name: Build site
+        run: hugo
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
