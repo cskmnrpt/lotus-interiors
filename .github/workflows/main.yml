@@ -1,4 +1,3 @@
----
 name: Deploy Hugo site to Pages
 
 on:
@@ -33,7 +32,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm' # Cache npm dependencies for faster builds
 
       - name: Set up Hugo
         uses: peaceiris/actions-hugo@v3
@@ -48,14 +46,14 @@ jobs:
           cache: true # Cache Go modules
 
       - name: Install npm dependencies
-        run: npm ci # Use npm ci for cleaner, reproducible builds
+        run: npm install
 
       - name: Setup Project
         run: npm run project-setup
 
       - name: Build Hugo site
-        run: hugo --minify --environment ${{ env.HUGO_ENV }}
-
+        run: hugo run dev
+        
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -71,4 +69,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
----
